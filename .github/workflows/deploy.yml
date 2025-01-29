@@ -1,0 +1,56 @@
+name: Build a Small-scale CMS App
+
+on:
+  push:
+    paths:
+      - "react-ui/**"
+      - "cms/**"
+      - docker-compose.yml
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      REACT_IMAGE: ghcr.io/Anwar3006/react-ui:latest
+      JAVA_IMAGE: ghcr.io/Anwar3006/java-cms:latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Login into Github Container Registry
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build and Push React Image
+      - name: Build React Image
+        if: contains(github.event.head_commit.message, 'react-ui')
+        run: |
+          docker build -t $REACT_IMAGE ./react-ui
+          docker push $REACT_IMAGE
+
+      # Build and Push Java Image
+      - name: Build Java Image
+        if: contains(github.event.head_commit.message, 'cms')
+        run: |
+          docker build -t $JAVA_IMAGE ./cms
+          docker push $JAVA_IMAGE
+
+      # Deply updated service to server(run this if you have a production server)
+    #   - name: SSH to Server and Deploy
+    #     uses: appleboy/ssh-action@v1.2.0
+    #     with:
+    #       host: ${{ secrets.SSH_HOST }}
+    #       username: ${{ secrets.SSH_USERNAME }}
+    #       key: ${{ secrets.SSH_KEY }}
+    #       script: |
+    #         docker-compose down
+    #         docker-compose up -d
