@@ -1,11 +1,18 @@
 package com.eventdriven.cms.domain;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,8 +41,14 @@ public class BlogPost {
     @JoinColumn(name = "author_id", nullable=false)
     private AppUser author;
 
+    @ManyToMany
+    @JoinTable(name = "post_subscribers", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<AppUser> subscribers = new HashSet<>();
+
     public BlogPost(String title, String content, POST_STATUS status, AppUser author) {
         this.title = title;
         this.content = content;
+        this.status = status;
+        this.author = author;
     }
 }

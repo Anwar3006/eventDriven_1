@@ -28,7 +28,7 @@ import jakarta.persistence.Table;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "app_users")
+@Table(name = "app_user")
 public class AppUser implements UserDetails {
 
     @Id

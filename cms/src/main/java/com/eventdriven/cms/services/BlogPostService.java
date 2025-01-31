@@ -16,7 +16,9 @@ public interface BlogPostService {
 
     public List<BlogPost> getAllPosts();
 
-    public void deletePost(Long id);
+    public void deletePost(Long id, String authorEmail);
 
-    public BlogPost updatePost(PostDTO post, Long id);
+    public BlogPost updatePost(PostDTO post, Long id, String authorEmail);
+
+    public BlogPost verifyAuthor(Long id, String authorEmail);
 }
