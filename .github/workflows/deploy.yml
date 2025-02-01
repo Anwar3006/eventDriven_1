@@ -6,6 +6,7 @@ on:
       - "react-ui/**"
       - "cms/**"
       - docker-compose.yml
+      - .github/workflows/deploy.yml
     branches:
       - main
 
@@ -31,7 +32,7 @@ jobs:
 
       # Use maven to build Java App
       - name: Build Java App
-        run: mvn clean package -DskipTests
+        run: mvn -f cms/pom.xml clean package -DskipTests
 
       # Step 2: Login into Github Container Registry
       - name: Login to GHCR
