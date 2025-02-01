@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      REACT_IMAGE: ghcr.io/Anwar3006/react-ui:latest
-      JAVA_IMAGE: ghcr.io/Anwar3006/java-cms:latest
+      REACT_IMAGE: ghcr.io/anwar3006/react-ui:latest
+      JAVA_IMAGE: ghcr.io/anwar3006/java-cms:latest
 
     steps:
       # Step 1: Checkout the code

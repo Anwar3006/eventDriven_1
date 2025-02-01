@@ -5,7 +5,7 @@ function App() {
     <p className="text-3xl">
       Pop
       <div>
-        <Button>Click me!</Button>
+        <Button>Click me now!</Button>
       </div>
     </p>
   );
