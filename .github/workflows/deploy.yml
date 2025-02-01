@@ -30,16 +30,27 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Step 3: Detect changes and build only modified images
+      - name: Determine changed files
+        id: changes
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            react-ui:
+              - 'react-ui/**'
+            java-cms:
+              - 'cms/**'
+
       # Build and Push React Image
       - name: Build React Image
-        if: contains(github.event.head_commit.message, 'react-ui')
+        if: steps.changes.outputs.react-ui == 'true'
         run: |
           docker build -t $REACT_IMAGE ./react-ui
           docker push $REACT_IMAGE
 
       # Build and Push Java Image
       - name: Build Java Image
-        if: contains(github.event.head_commit.message, 'cms')
+        if: steps.changes.outputs.java-cms == 'true'
         run: |
           docker build -t $JAVA_IMAGE ./cms
           docker push $JAVA_IMAGE
