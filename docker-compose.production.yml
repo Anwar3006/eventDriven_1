@@ -1,21 +1,15 @@
-version: "3.8"
-
 services:
   react-ui:
-    build:
-      context: ./react-ui
-      dockerfile: Dockerfile
-    container_name: react-ui
+    image: ghcr.io/anwar3006/react-ui:latest
+    container_name: react-ui-prod
     ports:
       - "3000:80"
     depends_on:
       - java-cms
 
   java-cms:
-    build:
-      context: ./cms
-      dockerfile: Dockerfile
-    container_name: java-cms
+    image: ghcr.io/anwar3006/java-cms:latest
+    container_name: java-cms-prod
     ports:
       - "8080:8080"
     environment:
