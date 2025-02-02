@@ -1,12 +1,18 @@
-import { Button } from "./components/ui/button";
+import { lazy, Suspense } from "react";
+import { Route, Routes } from "react-router-dom";
+import LoadingPage from "./components/LoadingPage";
+
+const LoginPage = lazy(() => import("@/pages/Login"));
+const RegisterPage = lazy(() => import("@/pages/Register"));
 
 function App() {
   return (
-    <p className="text-3xl">
-      <div>
-        <Button>Click me now!</Button>
-      </div>
-    </p>
+    <Suspense fallback={<LoadingPage />}>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+      </Routes>
+    </Suspense>
   );
 }
 
