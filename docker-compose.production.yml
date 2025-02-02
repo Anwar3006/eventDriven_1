@@ -2,6 +2,8 @@ services:
   react-ui:
     image: ghcr.io/anwar3006/react-ui:latest
     container_name: react-ui-prod
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     ports:
       - "3000:80"
     depends_on:
@@ -10,6 +12,8 @@ services:
   java-cms:
     image: ghcr.io/anwar3006/java-cms:latest
     container_name: java-cms-prod
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     ports:
       - "8080:8080"
     environment:
@@ -45,6 +49,20 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: always
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - ~/.docker/config.json:/config.json
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=120 # Poll every 2 minutes
+      - WATCHTOWER_CLEANUP=true # Remove old images
+      - REPO_USER=${REPO_USER}
+      - REPO_PASSWORD=${REPO_PASSWORD}
+    command: --label-enable --debug # Run in debug mode
 
 volumes:
   postgresql_data:
