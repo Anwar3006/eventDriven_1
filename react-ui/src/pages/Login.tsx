@@ -1,5 +1,3 @@
-import React from "react";
-
 const Login = () => {
   return (
     <div className="bg-sky-100 flex justify-center items-center h-screen">
