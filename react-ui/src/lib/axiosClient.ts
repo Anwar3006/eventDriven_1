@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const baseURL =
-  process.env.JAVA_API_URL ||
-  `http://localhost:8080/api/${process.env.JAVA_API_VERSION}`;
+  import.meta.env.VITE_JAVA_API_URL ||
+  `http://localhost:8080/api/${import.meta.env.VITE_JAVA_API_VERSION}`;
 
 const axiosClient = axios.create({
   baseURL,
@@ -15,11 +15,14 @@ const axiosClient = axios.create({
 axiosClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("jwt");
-    if (token) {
+    if (
+      token &&
+      config.url !== "/auth/register" &&
+      config.url !== "/auth/login"
+    ) {
       config.headers.Authorization = `Bearer ${token}`;
-    } else {
-      console.log("No token found. User not authenticated.");
     }
+
     return config;
   },
   (error) => {

@@ -58,7 +58,7 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigSource(){
         return (HttpServletRequest request) -> {
             CorsConfiguration config = new CorsConfiguration();
-            config.setAllowedOrigins(List.of("http://localhost:3000", "*"));
+            config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
             config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
             config.setAllowCredentials(true);
             config.setAllowedHeaders(List.of("*"));
