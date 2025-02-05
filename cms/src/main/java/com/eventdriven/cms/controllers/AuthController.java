@@ -1,5 +1,7 @@
 package com.eventdriven.cms.controllers;
 
+import java.util.HashMap;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,11 +37,14 @@ public class AuthController {
     
     @PostMapping("/login")
     public ResponseEntity<?> LoginUser(@RequestBody LoginUserDTO body) {
-        String token = authService.loginUser(body);
-        
+        HashMap<String, LoginUserResponseDTO.Userlogin> loginObj = authService.loginUser(body);
+        String token = loginObj.keySet().iterator().next();
+        LoginUserResponseDTO.Userlogin user = loginObj.get(token);
+
         LoginUserResponseDTO response = new LoginUserResponseDTO();
         response.setToken(token);
         response.setMessage("User Login successful!");
+        response.setUser(user);
         
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

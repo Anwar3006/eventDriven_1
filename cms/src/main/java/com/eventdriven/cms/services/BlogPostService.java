@@ -11,6 +11,7 @@ public interface BlogPostService {
     public BlogPost createPost(PostDTO post);
 
     public Optional<BlogPost> getPostById(Long id);
+    Optional<BlogPost> getPostByTitle(String title);
 
     public Optional<List<BlogPost>> getPostByAuthor(Long authorId);
 

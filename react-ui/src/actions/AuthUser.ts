@@ -22,6 +22,7 @@ export const LoginUser = async (data: LoginInputProps) => {
     }
 
     localStorage.setItem("jwt", userauth.data.token);
+    localStorage.setItem("user", JSON.stringify(userauth.data.user));
     return userauth;
   } catch (error) {
     console.error("@RegisterUserError: ", error);

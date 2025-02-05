@@ -62,9 +62,16 @@ public class BlogPostController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
-    @GetMapping("/posts/{id}")
-    public ResponseEntity<?> GetPostById(@PathVariable Long id) {
-        Optional<BlogPost> postFound = blogPostService.getPostById(id);
+    @GetMapping("/posts/{identifier}")
+    public ResponseEntity<?> GetPostById(@PathVariable String identifier) {
+        Optional<BlogPost> postFound;
+        
+        if (identifier.matches("\\d+")){
+            postFound = blogPostService.getPostById(Long.parseLong(identifier));
+        } else {
+            postFound = blogPostService.getPostByTitle(identifier);
+        }
+        
         if(postFound.isEmpty()){
             return new ResponseEntity<>("Post not found", HttpStatus.NOT_FOUND);
         }

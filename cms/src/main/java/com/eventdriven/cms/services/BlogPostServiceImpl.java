@@ -28,13 +28,17 @@ public class BlogPostServiceImpl implements BlogPostService{
     @Transactional
     @Override
     public BlogPost createPost(PostDTO post) {
-        BlogPost newPost = new BlogPost();
+        Optional<BlogPost> postFound = blogPostRepository.findByTitle(post.getTitle());
+        if (postFound.isPresent()){
+            return postFound.get();
+        }
+        
+        AppUser user = userRepository.findById(post.getAuthor()).orElseThrow(() -> new RuntimeException("User not found"));
 
+        BlogPost newPost = new BlogPost();
         newPost.setTitle(post.getTitle());
         newPost.setContent(post.getContent());
         newPost.setStatus(post.getStatus());
-
-        AppUser user = userRepository.findById(post.getAuthor()).orElseThrow(() -> new RuntimeException("User not found"));
         newPost.setAuthor(user);
 
         BlogPost savedPost = blogPostRepository.save(newPost);
@@ -49,6 +53,11 @@ public class BlogPostServiceImpl implements BlogPostService{
     @Override
     public Optional<BlogPost> getPostById(Long id) {
         return blogPostRepository.findById(id);
+    }
+
+    @Override
+    public Optional<BlogPost> getPostByTitle(String title) {
+        return blogPostRepository.findByTitle(title);
     }
 
     @Override

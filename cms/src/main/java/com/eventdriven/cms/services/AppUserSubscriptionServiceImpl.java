@@ -34,6 +34,8 @@ public class AppUserSubscriptionServiceImpl implements AppUserSubscriptionServic
 
         AppUser user = userFound.get();
         BlogPost post = postFound.get();
+        if (user.getId() == post.getAuthor().getId()) return;
+        
         post.getSubscribers().add(user);
     }
 

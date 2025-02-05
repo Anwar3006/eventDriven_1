@@ -1,196 +1,183 @@
-const BlogPost = () => {
+import React, { useMemo, useState } from "react";
+import {
+  Calendar,
+  Clock,
+  Heart,
+  Share2,
+  BookmarkPlus,
+  ChevronLeft,
+  BellIcon,
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { useNavigate, useParams } from "react-router-dom";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { GetBlogPost } from "@/actions/GetBlogPost";
+import { BlogPostResponse } from "@/types/blogPostResponse";
+import { debounce } from "lodash";
+import { SubscribeUser, UnSubscribeUser } from "@/actions/SubscribeUser";
+
+const Blogdata = () => {
+  const navigate = useNavigate();
+  const params = useParams();
+
+  const [isSubscribed, setIsSubscribed] = useState(false);
+
+  const { data, isPending } = useQuery<BlogPostResponse>({
+    queryKey: ["single_data"],
+    queryFn: () => GetBlogPost(params.slug as string),
+  });
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const onButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate("/home");
+  };
+
+  const { mutate } = useMutation({
+    mutationFn: async (shouldSubscribe: boolean) => {
+      if (shouldSubscribe) {
+        await SubscribeUser(data?.id as string);
+      } else {
+        await UnSubscribeUser(data?.id as string);
+      }
+    },
+    onError: (error, variables) => {
+      // Revert the UI state on error
+      setIsSubscribed(!variables);
+      console.error("Subscription action failed:", error);
+    },
+  });
+
+  const debouncedMutate = useMemo(
+    () => debounce((shouldSubscribe: boolean) => mutate(shouldSubscribe), 1000),
+    [mutate]
+  );
+
+  const handleSubscribe = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    const newState = !isSubscribed;
+    setIsSubscribed(newState);
+    debouncedMutate(newState);
+  };
+
   return (
-    <div className="">
-      <div className="flex max-w-xl my-10 bg-white shadow-md rounded-lg overflow-hidden mx-auto">
-        <div className="flex items-center w-full">
-          <div className="w-full">
-            <div className="flex flex-row mt-2 px-2 py-3 mx-3">
-              <div className="w-auto h-auto rounded-full border-2 border-pink-500">
-                <img
-                  className="w-12 h-12 object-cover rounded-full shadow cursor-pointer"
-                  alt="User avatar"
-                  src="https://images.unsplash.com/photo-1477118476589-bff2c5c4cfbb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=200&q=200"
-                />
-              </div>
-              <div className="flex flex-col mb-2 ml-4 mt-1">
-                <div className="text-gray-600 text-sm font-semibold">
-                  Sara Lauren
-                </div>
-                <div className="flex w-full mt-1">
-                  <div className="text-blue-700 font-base text-xs mr-1 cursor-pointer">
-                    UX Design
-                  </div>
-                  <div className="text-gray-400 font-thin text-xs">
-                    • 30 seconds ago
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="border-b border-gray-100"></div>
-            <div className="text-gray-400 font-medium text-sm mb-7 mt-6 mx-3 px-2">
-              <img className="rounded" src="https://picsum.photos/536/354" />
-            </div>
-            <div className="text-gray-600 font-semibold text-lg mb-2 mx-3 px-2">
-              Dummy text of the printing and typesetting industry
-            </div>
-            <div className="text-gray-500 font-thin text-sm mb-6 mx-3 px-2">
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500
-            </div>
-            <div className="flex justify-start mb-4 border-t border-gray-100">
-              <div className="flex w-full mt-1 pt-2 pl-5">
-                <span className="bg-white transition ease-out duration-300 hover:text-red-500 border w-8 h-8 px-2 pt-2 text-center rounded-full text-gray-400 cursor-pointer mr-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    width="14px"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                    />
-                  </svg>
-                </span>
-                <img
-                  className="inline-block object-cover w-8 h-8 text-white border-2 border-white rounded-full shadow-sm cursor-pointer"
-                  src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                  alt=""
-                />
-                <img
-                  className="inline-block object-cover w-8 h-8 -ml-2 text-white border-2 border-white rounded-full shadow-sm cursor-pointer"
-                  src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                  alt=""
-                />
-                <img
-                  className="inline-block object-cover w-8 h-8 -ml-2 text-white border-2 border-white rounded-full shadow-sm cursor-pointer"
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80"
-                  alt=""
-                />
-                <img
-                  className="inline-block object-cover w-8 h-8 -ml-2 text-white border-2 border-white rounded-full shadow-sm cursor-pointer"
-                  src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80"
-                  alt=""
-                />
-              </div>
-              <div className="flex justify-end w-full mt-1 pt-2 pr-5">
-                <span className="transition ease-out duration-300 hover:bg-blue-50 bg-blue-100 h-8 px-2 py-2 text-center rounded-full text-blue-400 cursor-pointer mr-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    width="14px"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                    />
-                  </svg>
-                </span>
-                <span className="transition ease-out duration-300 hover:bg-blue-500 bg-blue-600 h-8 px-2 py-2 text-center rounded-full text-gray-100 cursor-pointer">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    width="14px"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                    />
-                  </svg>
-                </span>
-              </div>
-            </div>
-            <div className="flex w-full border-t border-gray-100">
-              <div className="mt-3 mx-5 flex flex-row">
-                <div className="flex text-gray-700 font-normal text-sm rounded-md mb-2 mr-4 items-center">
-                  Comments:
-                  <div className="ml-1 text-gray-400 font-thin text-ms">
-                    {" "}
-                    30
-                  </div>
-                </div>
-                <div className="flex text-gray-700 font-normal text-sm rounded-md mb-2 mr-4 items-center">
-                  Views:{" "}
-                  <div className="ml-1 text-gray-400 font-thin text-ms">
-                    {" "}
-                    60k
-                  </div>
-                </div>
-              </div>
-              <div className="mt-3 mx-5 w-full flex justify-end">
-                <div className="flex text-gray-700 font-normal text-sm rounded-md mb-2 mr-4 items-center">
-                  Likes:{" "}
-                  <div className="ml-1 text-gray-400 font-thin text-ms">
-                    {" "}
-                    120k
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="relative flex items-center self-center w-full max-w-xl p-4 overflow-hidden text-gray-600 focus-within:text-gray-400">
-              <img
-                className="w-10 h-10 object-cover rounded-full shadow mr-2 cursor-pointer"
-                alt="User avatar"
-                src="https://images.unsplash.com/photo-1477118476589-bff2c5c4cfbb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=200&q=200"
-              />
-              <span className="absolute inset-y-0 right-0 flex items-center pr-6">
-                <button
-                  type="submit"
-                  className="p-1 focus:outline-none focus:shadow-none hover:text-blue-500"
-                >
-                  <svg
-                    className="w-6 h-6 transition ease-out duration-300 hover:text-blue-500 text-gray-400"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </button>
+    <div className="max-w-4xl mx-auto px-4 py-8 bg-slate-100">
+      {/* Header Section */}
+      <div className="space-y-6 mb-8">
+        <Button
+          variant="default"
+          asChild
+          onClick={onButtonClick}
+          className="cursor-pointer"
+        >
+          <div className="flex items-center justify-center">
+            <ChevronLeft size={20} />
+            <span>Back</span>
+          </div>
+        </Button>
+
+        <h1 className="text-4xl font-bold tracking-tight py-6">
+          {data?.title}
+        </h1>
+
+        <div className="flex items-center space-x-4">
+          <Avatar className="h-12 w-12">
+            <AvatarImage src={data?.author.avatarUrl} alt={data?.author.name} />
+            <AvatarFallback>{data?.author.name.charAt(0)}</AvatarFallback>
+          </Avatar>
+
+          <div>
+            <div className="font-medium">{data?.author.name}</div>
+            <div className="flex items-center text-sm text-gray-500 space-x-4">
+              <span className="flex items-center">
+                <Calendar className="w-4 h-4 mr-1" />
+                {formatDate(data?.createdAt!)}
               </span>
-              <input
-                type="search"
-                className="w-full py-2 pl-4 pr-10 text-sm bg-gray-100 border border-transparent appearance-none rounded-tg placeholder-gray-400 focus:bg-white focus:outline-none focus:border-blue-500 focus:text-gray-900 focus:shadow-outline-blue"
-                style={{ borderRadius: "25px" }}
-                placeholder="Post a comment..."
-                autoComplete="off"
-              />
+              <span className="flex items-center">
+                <Clock className="w-4 h-4 mr-1" />5 min read
+              </span>
             </div>
           </div>
         </div>
       </div>
-      <script
-        data-name="BMC-Widget"
-        data-cfasync="false"
-        src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js"
-        data-id="matheusgongo"
-        data-description="Support me on Buy me a coffee!"
-        data-message="Thank you for visiting! :D"
-        data-color="#BD5FFF"
-        data-position="Right"
-        data-x_margin="18"
-        data-y_margin="18"
-      ></script>
+
+      {/* Cover Image */}
+      <div className="relative h-96 mb-8 rounded-lg overflow-hidden">
+        <img
+          src={"https://picsum.photos//1200?random=1"}
+          alt="Cover"
+          className="object-cover w-full h-full"
+        />
+      </div>
+
+      {/* Action Bar */}
+      <Card className="mb-8 sticky top-4 z-10">
+        <CardContent className="flex justify-between items-center py-4">
+          <div className="flex space-x-2">
+            <Button variant="ghost" size="sm" className="flex items-center">
+              <Heart className="w-4 h-4 mr-2" />
+              <span>{data?.subscribers.length}</span>
+            </Button>
+            <Button variant="ghost" size="sm">
+              <Share2 className="w-4 h-4 mr-2" />
+              Share
+            </Button>
+          </div>
+          <Button
+            variant="secondary"
+            size="sm"
+            className={`w-max-[8rem] w-min-[8rem] w-[8rem] ${
+              isSubscribed
+                ? "bg-zinc-800 text-white hover:text-gray-400 hover:bg-zinc-200"
+                : "bg-gray-200"
+            }`}
+            onClick={handleSubscribe}
+          >
+            {isSubscribed ? (
+              <BellIcon className="w-4 h-4 mr-2" fill="white" />
+            ) : (
+              <BellIcon className="w-4 h-4 mr-2" />
+            )}
+            {isSubscribed ? "Subscribed" : "Subscribe"}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Content */}
+      <article className="prose lg:prose-lg max-w-none">
+        <div dangerouslySetInnerHTML={{ __html: data?.content! }} />
+      </article>
+
+      {/* Author Card */}
+      <Card className="mt-12">
+        <CardContent className="flex items-center space-x-4 p-6">
+          <Avatar className="h-16 w-16">
+            <AvatarImage src={data?.author.avatarUrl} alt={data?.author.name} />
+            <AvatarFallback>{data?.author.name.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <div>
+            <h3 className="font-semibold text-lg">
+              Written by {data?.author.name}
+            </h3>
+            <p className="text-gray-500">
+              Technical writer and software engineer passionate about emerging
+              technologies and their impact on the future of web development.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
-export default BlogPost;
+export default Blogdata;

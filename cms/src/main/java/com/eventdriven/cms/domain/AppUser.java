@@ -1,5 +1,6 @@
 package com.eventdriven.cms.domain;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,12 +16,17 @@ import lombok.Setter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 
@@ -46,9 +52,26 @@ public class AppUser implements UserDetails {
     @JsonIgnore
     private String password;
 
+    @Enumerated(EnumType.STRING)
     private USER_ROLES role;
 
-    @OneToMany
+    private String avatarUrl;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<BlogPost> blogPosts;
 

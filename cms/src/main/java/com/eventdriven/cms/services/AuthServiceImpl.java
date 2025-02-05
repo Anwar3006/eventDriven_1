@@ -1,5 +1,7 @@
 package com.eventdriven.cms.services;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.security.core.Authentication;
@@ -10,6 +12,7 @@ import com.eventdriven.cms.domain.USER_ROLES;
 import com.eventdriven.cms.repository.AppUserRepository;
 import com.eventdriven.cms.requestDTO.LoginUserDTO;
 import com.eventdriven.cms.requestDTO.RegisterUserDTO;
+import com.eventdriven.cms.response.LoginUserResponseDTO;
 import com.eventdriven.cms.security.PasswordEncoder;
 import com.eventdriven.cms.security.session.JwtGenerator;
 import com.eventdriven.cms.util.CreateAuth;
@@ -42,7 +45,7 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
-    public String loginUser(LoginUserDTO data) {
+    public HashMap<String, LoginUserResponseDTO.Userlogin> loginUser(LoginUserDTO data) {
         Optional<AppUser> userFound = userRepository.findByEmail(data.getEmail());
         if(userFound.isEmpty()){
             // throw UsernameNotFoundException
@@ -56,7 +59,19 @@ public class AuthServiceImpl implements AuthService{
 
         //create the auth object and set the jwt
         Authentication session = createAuth.createAuthObj(user);
-        return jwtGenerator.generateToken(session);
+
+        HashMap<String, LoginUserResponseDTO.Userlogin> loginObj = new HashMap<>();
+        String jwt = jwtGenerator.generateToken(session);
+
+        
+        LoginUserResponseDTO.Userlogin obj = new LoginUserResponseDTO.Userlogin();
+        obj.setId(user.getId());
+        obj.setName(user.getName());
+        obj.setEmail(user.getEmail());
+
+        loginObj.put(jwt, obj);
+
+        return loginObj;
     }
 
 }

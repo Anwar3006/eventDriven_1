@@ -5,7 +5,7 @@ import { RegisterInputSchema } from "@/zodSchema/authInputSchema";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Link, redirect } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -21,6 +21,8 @@ import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof RegisterInputSchema>>({
     resolver: zodResolver(RegisterInputSchema),
     defaultValues: {
@@ -37,7 +39,7 @@ const RegisterPage = () => {
       toast.info("User registered successfully", { id: "register_user" });
 
       // redirect to login page
-      redirect("/login");
+      navigate("/login");
     },
     onError: () => {
       toast.error("User registration failed", { id: "register_user" });
@@ -83,7 +85,7 @@ const RegisterPage = () => {
                       <Input
                         placeholder="Kwame Billings"
                         {...field}
-                        className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 bg-white"
+                        className="w-full border border-gray-300 rounded-md py-[1.5rem] px-3 focus:outline-none focus:border-blue-500 bg-white"
                       />
                     </FormControl>
 
@@ -107,7 +109,7 @@ const RegisterPage = () => {
                       <Input
                         placeholder="kwameB@gmail.com"
                         {...field}
-                        className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 bg-white"
+                        className="w-full border border-gray-300 rounded-md py-[1.5rem] px-3 focus:outline-none focus:border-blue-500 bg-white"
                       />
                     </FormControl>
 
@@ -132,7 +134,7 @@ const RegisterPage = () => {
                         {...field}
                         type="password"
                         placeholder="**********"
-                        className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 bg-white"
+                        className="w-full border border-gray-300 rounded-md py-[1.5rem] px-3 focus:outline-none focus:border-blue-500 bg-white"
                       />
                     </FormControl>
 
@@ -145,10 +147,10 @@ const RegisterPage = () => {
             {/* Register Button */}
             <Button
               variant={"default"}
-              className="w-full bg-emerald-700 py-2 px-4 mt-5 text-base"
+              className="w-full bg-emerald-500 py-6 px-4 mt-5 text-base hover:bg-green-600"
             >
               {isPending ? (
-                <Loader2Icon className="animate-spin" />
+                <Loader2Icon size={16} className="animate-spin" />
               ) : (
                 "Register"
               )}
@@ -160,7 +162,7 @@ const RegisterPage = () => {
         <div className="mt-6 text-muted-foreground text-center font-semibold">
           Already have an account?{" "}
           <Link to="/login">
-            <span className="underline">Log In Here</span>
+            <span className="underline text-sky-500">Log In Here</span>
           </Link>
         </div>
       </div>
