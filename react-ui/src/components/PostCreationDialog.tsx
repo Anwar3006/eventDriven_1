@@ -15,19 +15,13 @@ import { z } from "zod";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/authHook";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CreatePost } from "@/actions/CreatePost";
 import { toast } from "sonner";
 

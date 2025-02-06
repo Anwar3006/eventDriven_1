@@ -4,7 +4,6 @@ import {
   Clock,
   Heart,
   Share2,
-  BookmarkPlus,
   ChevronLeft,
   BellIcon,
 } from "lucide-react";
@@ -24,7 +23,7 @@ const Blogdata = () => {
 
   const [isSubscribed, setIsSubscribed] = useState(false);
 
-  const { data, isPending } = useQuery<BlogPostResponse>({
+  const { data } = useQuery<BlogPostResponse>({
     queryKey: ["single_data"],
     queryFn: () => GetBlogPost(params.slug as string),
   });
